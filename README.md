@@ -1,5 +1,7 @@
 # Taskwarrior API Server
 
+> **⚠️ UNDER CONSTRUCTION**: This project is currently in active development and is **not ready for production use**. APIs may change without notice. Use at your own risk.
+
 A headless REST API server for [Taskwarrior](https://taskwarrior.org/), providing a clean HTTP interface to interact with your tasks programmatically.
 
 ## Overview
