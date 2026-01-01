@@ -21,6 +21,17 @@ func NewTaskHandler(client *taskwarrior.Client) *TaskHandler {
 }
 
 // ListTasks handles GET /api/v1/tasks
+// @Summary      List tasks
+// @Description  Get tasks with optional filters
+// @Tags         tasks
+// @Produce      json
+// @Param        status   query    string    false  "Filter by status"  default(pending)
+// @Param        project  query    string    false  "Filter by project"
+// @Param        tags     query    []string  false  "Filter by tags"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /tasks [get]
 func (h *TaskHandler) ListTasks(c *gin.Context) {
 	// Get query parameters for filtering
 	status := c.DefaultQuery("status", "pending")
@@ -63,6 +74,16 @@ func (h *TaskHandler) ListTasks(c *gin.Context) {
 }
 
 // GetTask handles GET /api/v1/tasks/:uuid
+// @Summary      Get a task
+// @Description  Get task by UUID
+// @Tags         tasks
+// @Produce      json
+// @Param        uuid  path  string  true  "Task UUID"
+// @Success      200  {object}  taskwarrior.Task
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /tasks/{uuid} [get]
 func (h *TaskHandler) GetTask(c *gin.Context) {
 	uuid := c.Param("uuid")
 
@@ -87,6 +108,17 @@ func (h *TaskHandler) GetTask(c *gin.Context) {
 }
 
 // CreateTask handles POST /api/v1/tasks
+// @Summary      Create a task
+// @Description  Create new task
+// @Tags         tasks
+// @Accept       json
+// @Produce      json
+// @Param        task  body  taskwarrior.TaskCreate  true  "Task data"
+// @Success      201  {object}  taskwarrior.Task
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /tasks [post]
 func (h *TaskHandler) CreateTask(c *gin.Context) {
 	var taskCreate taskwarrior.TaskCreate
 
@@ -128,6 +160,18 @@ func (h *TaskHandler) CreateTask(c *gin.Context) {
 }
 
 // UpdateTask handles PATCH /api/v1/tasks/:uuid
+// @Summary      Update a task
+// @Description  Update existing task
+// @Tags         tasks
+// @Accept       json
+// @Produce      json
+// @Param        uuid  path  string  true  "Task UUID"
+// @Param        task  body  taskwarrior.TaskModify  true  "Task updates"
+// @Success      200  {object}  taskwarrior.Task
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /tasks/{uuid} [patch]
 func (h *TaskHandler) UpdateTask(c *gin.Context) {
 	uuid := c.Param("uuid")
 
@@ -179,6 +223,16 @@ func (h *TaskHandler) UpdateTask(c *gin.Context) {
 }
 
 // DeleteTask handles DELETE /api/v1/tasks/:uuid
+// @Summary      Delete a task
+// @Description  Delete task by UUID
+// @Tags         tasks
+// @Produce      json
+// @Param        uuid  path  string  true  "Task UUID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /tasks/{uuid} [delete]
 func (h *TaskHandler) DeleteTask(c *gin.Context) {
 	uuid := c.Param("uuid")
 
@@ -204,6 +258,16 @@ func (h *TaskHandler) DeleteTask(c *gin.Context) {
 }
 
 // DoneTask handles POST /api/v1/tasks/:uuid/done
+// @Summary      Mark task as done
+// @Description  Complete a task
+// @Tags         tasks
+// @Produce      json
+// @Param        uuid  path  string  true  "Task UUID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /tasks/{uuid}/done [post]
 func (h *TaskHandler) DoneTask(c *gin.Context) {
 	uuid := c.Param("uuid")
 
@@ -229,6 +293,16 @@ func (h *TaskHandler) DoneTask(c *gin.Context) {
 }
 
 // StartTask handles POST /api/v1/tasks/:uuid/start
+// @Summary      Start a task
+// @Description  Start task timer
+// @Tags         tasks
+// @Produce      json
+// @Param        uuid  path  string  true  "Task UUID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /tasks/{uuid}/start [post]
 func (h *TaskHandler) StartTask(c *gin.Context) {
 	uuid := c.Param("uuid")
 
@@ -254,6 +328,16 @@ func (h *TaskHandler) StartTask(c *gin.Context) {
 }
 
 // StopTask handles POST /api/v1/tasks/:uuid/stop
+// @Summary      Stop a task
+// @Description  Stop task timer
+// @Tags         tasks
+// @Produce      json
+// @Param        uuid  path  string  true  "Task UUID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /tasks/{uuid}/stop [post]
 func (h *TaskHandler) StopTask(c *gin.Context) {
 	uuid := c.Param("uuid")
 

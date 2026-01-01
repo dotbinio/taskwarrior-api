@@ -28,6 +28,28 @@ This server acts as a bridge between Taskwarrior's powerful CLI and modern appli
 - Go 1.21 or higher
 - Taskwarrior installed and configured (`task` command available)
 
+### Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/dotbinio/taskwarrior-api.git
+cd taskwarrior-api
+
+# Install dependencies
+make install
+
+# Set required environment variable
+export TW_API_TOKENS="your-secret-token"
+
+# Build and run
+make build
+./bin/taskwarrior-api
+```
+
+The server will start on `http://localhost:8080`
+
+**Access Swagger UI**: Open `http://localhost:8080/swagger/index.html` in your browser
+
 ### Building from Source
 
 ```bash
@@ -87,9 +109,32 @@ export TW_API_CORS_ORIGINS="http://localhost:3000,https://mytasks.example.com"
 ./bin/taskwarrior-api
 ```
 
+Or create a `.env` file (see `env.example` for template) and source it:
+
+```bash
+cp env.example .env
+# Edit .env with your values
+source .env
+./bin/taskwarrior-api
+```
+
 ## API Documentation
 
 All API endpoints require authentication via Bearer token.
+
+### Interactive API Documentation (Swagger UI)
+
+Once the server is running, you can access the interactive Swagger UI at:
+
+```
+http://localhost:8080/swagger/index.html
+```
+
+This provides a web interface to:
+- Browse all available endpoints
+- View request/response schemas
+- Test API calls directly from your browser
+- See example requests and responses
 
 ### Authentication
 

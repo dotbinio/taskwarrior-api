@@ -20,6 +20,14 @@ func NewProjectHandler(client *taskwarrior.Client) *ProjectHandler {
 }
 
 // ListProjects handles GET /api/v1/projects
+// @Summary      List projects
+// @Description  All projects with counts
+// @Tags         projects
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /projects [get]
 func (h *ProjectHandler) ListProjects(c *gin.Context) {
 	projects, err := h.client.GetProjects()
 	if err != nil {
@@ -37,6 +45,16 @@ func (h *ProjectHandler) ListProjects(c *gin.Context) {
 }
 
 // GetProjectTasks handles GET /api/v1/projects/:name/tasks
+// @Summary      Get project tasks
+// @Description  Tasks for a project
+// @Tags         projects
+// @Produce      json
+// @Param        name  path  string  true  "Project name"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /projects/{name}/tasks [get]
 func (h *ProjectHandler) GetProjectTasks(c *gin.Context) {
 	projectName := c.Param("name")
 

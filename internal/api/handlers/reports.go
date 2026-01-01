@@ -20,6 +20,14 @@ func NewReportHandler(client *taskwarrior.Client) *ReportHandler {
 }
 
 // NextReport handles GET /api/v1/reports/next
+// @Summary      Next tasks report
+// @Description  Pending tasks by urgency
+// @Tags         reports
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /reports/next [get]
 func (h *ReportHandler) NextReport(c *gin.Context) {
 	tasks, err := h.client.Export("status:pending")
 	if err != nil {
@@ -40,6 +48,14 @@ func (h *ReportHandler) NextReport(c *gin.Context) {
 }
 
 // ActiveReport handles GET /api/v1/reports/active
+// @Summary      Active tasks report
+// @Description  Currently started tasks
+// @Tags         reports
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /reports/active [get]
 func (h *ReportHandler) ActiveReport(c *gin.Context) {
 	tasks, err := h.client.Export("status:pending +ACTIVE")
 	if err != nil {
@@ -58,6 +74,14 @@ func (h *ReportHandler) ActiveReport(c *gin.Context) {
 }
 
 // CompletedReport handles GET /api/v1/reports/completed
+// @Summary      Completed tasks report
+// @Description  All completed tasks
+// @Tags         reports
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /reports/completed [get]
 func (h *ReportHandler) CompletedReport(c *gin.Context) {
 	tasks, err := h.client.Export("status:completed")
 	if err != nil {

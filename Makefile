@@ -1,16 +1,20 @@
-.PHONY: build run test clean dev install
+.PHONY: build run test clean dev install swagger
 
 # Build the server binary
-build:
+build: swagger
 	go build -o bin/taskwarrior-api ./cmd/server
 
 # Run the server
-run:
+run: swagger
 	go run ./cmd/server
 
 # Run with hot reload (requires air: go install github.com/air-verse/air@latest)
 dev:
 	air
+
+# Generate Swagger documentation
+swagger:
+	swag init -g cmd/server/main.go -o docs
 
 # Run tests
 test:
@@ -25,10 +29,12 @@ test-coverage:
 install:
 	go mod download
 	go mod tidy
+	go install github.com/swaggo/swag/cmd/swag@latest
 
 # Clean build artifacts
 clean:
 	rm -rf bin/
+	rm -rf docs/
 	rm -f coverage.out
 
 # Format code
@@ -45,6 +51,7 @@ help:
 	@echo "  build          - Build the server binary"
 	@echo "  run            - Run the server"
 	@echo "  dev            - Run with hot reload (requires air)"
+	@echo "  swagger        - Generate Swagger documentation"
 	@echo "  test           - Run tests"
 	@echo "  test-coverage  - Run tests with coverage report"
 	@echo "  install        - Install/update dependencies"

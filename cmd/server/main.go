@@ -15,6 +15,23 @@ import (
 	"github.com/dotbinio/taskwarrior-api/internal/taskwarrior"
 )
 
+// @title           Taskwarrior API
+// @version         1.0
+// @description     Headless REST API for Taskwarrior
+
+// @contact.name   API Support
+// @contact.url    http://github.com/dotbinio/taskwarrior-api
+
+// @license.name  MIT
+// @license.url   https://opensource.org/licenses/MIT
+
+// @host      localhost:8080
+// @BasePath  /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
 func main() {
 	// Load configuration
 	cfg, err := config.Load()

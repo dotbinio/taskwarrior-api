@@ -6,6 +6,9 @@ bin/
 *.so
 *.dylib
 
+# Swagger docs (auto-generated)
+docs/
+
 # Test coverage
 *.out
 coverage.out
