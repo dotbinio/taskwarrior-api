@@ -22,13 +22,22 @@ func NewClient(dataLocation string) *Client {
 	}
 }
 
-// Export retrieves all tasks matching the filter as JSON
 func (c *Client) Export(filter string) ([]Task, error) {
+	return c.ExportReport(filter, "")
+}
+
+// ExportReport retrieves all tasks with the provided report and matching the filter as JSON
+func (c *Client) ExportReport(filter string, report string) ([]Task, error) {
 	args := []string{}
 	if filter != "" {
 		args = append(args, filter)
 	}
-	args = append(args, "export", "rc.json.array=on")
+	args = append(args, "export")
+
+	// TODO: vaidation for report
+	if report != "" {
+		args = append(args, report)
+	}
 
 	cmd := c.buildCommand(args...)
 	output, err := cmd.Output()

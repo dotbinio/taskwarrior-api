@@ -79,11 +79,7 @@ func SetupRouter(cfg *config.Config, twClient *taskwarrior.Client, validator *au
 	// Report routes
 	reports := v1.Group("/reports")
 	{
-		reports.GET("/next", reportHandler.NextReport)
-		reports.GET("/active", reportHandler.ActiveReport)
-		reports.GET("/completed", reportHandler.CompletedReport)
-		reports.GET("/waiting", reportHandler.WaitingReport)
-		reports.GET("/all", reportHandler.AllReport)
+		reports.GET("/:name", reportHandler.GetReport)
 	}
 
 	// Project routes
