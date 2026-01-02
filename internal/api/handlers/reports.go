@@ -19,6 +19,31 @@ func NewReportHandler(client *taskwarrior.Client) *ReportHandler {
 	}
 }
 
+// ListReports handles GET /api/v1/reports
+// @Summary      List available reports
+// @Description  Get list of all available Taskwarrior reports
+// @Tags         reports
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Failure      500  {object}  map[string]interface{}
+// @Security     BearerAuth
+// @Router       /reports [get]
+func (h *ReportHandler) ListReports(c *gin.Context) {
+	reports, err := h.client.GetReports()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to retrieve reports",
+			"code":  "REPORTS_LIST_FAILED",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"reports": reports,
+		"count":   len(reports),
+	})
+}
+
 // GetReport handles GET /api/v1/reports/:name
 // @Summary      Get tasks report by name
 // @Description  Get tasks by report name (eg: next, active, completed, waiting, all)

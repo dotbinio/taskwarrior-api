@@ -245,6 +245,90 @@ func (c *Client) Stop(uuid string) error {
 	return nil
 }
 
+// Show executes task _show and returns the output
+func (c *Client) Show() (string, error) {
+	cmd := c.buildCommand("_show")
+	output, err := cmd.Output()
+	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			return "", fmt.Errorf("task _show failed: %s", string(exitErr.Stderr))
+		}
+		return "", fmt.Errorf("task _show failed: %w", err)
+	}
+
+	return string(output), nil
+}
+
+// GetReports retrieves all available Taskwarrior reports
+func (c *Client) GetReports() ([]ReportInfo, error) {
+	output, err := c.Show()
+	if err != nil {
+		return nil, err
+	}
+
+	return parseReports(output), nil
+}
+
+// parseReports extracts report information from task _show output
+func parseReports(output string) []ReportInfo {
+	reports := make(map[string]*ReportInfo)
+
+	lines := strings.Split(output, "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if !strings.HasPrefix(line, "report.") {
+			continue
+		}
+
+		// Parse report.{name}.{field}={value}
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := parts[0]
+		value := parts[1]
+
+		// Extract report name and field
+		keyParts := strings.Split(key, ".")
+		if len(keyParts) < 3 {
+			continue
+		}
+
+		reportName := keyParts[1]
+		field := keyParts[2]
+
+		// Initialize report if not exists
+		if reports[reportName] == nil {
+			reports[reportName] = &ReportInfo{Name: reportName}
+		}
+
+		// Set field value
+		switch field {
+		case "description":
+			reports[reportName].Description = value
+		case "filter":
+			reports[reportName].Filter = value
+		case "columns":
+			reports[reportName].Columns = value
+		case "labels":
+			reports[reportName].Labels = value
+		case "sort":
+			reports[reportName].Sort = value
+		case "context":
+			reports[reportName].Context = value
+		}
+	}
+
+	// Convert map to slice
+	result := make([]ReportInfo, 0, len(reports))
+	for _, report := range reports {
+		result = append(result, *report)
+	}
+
+	return result
+}
+
 // GetProjects retrieves all unique projects
 func (c *Client) GetProjects() ([]Project, error) {
 	tasks, err := c.Export("status:pending")

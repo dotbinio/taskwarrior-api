@@ -132,3 +132,14 @@ type Project struct {
 	Name  string `json:"name"`
 	Count int    `json:"count"`
 }
+
+// ReportInfo holds information about a Taskwarrior report
+type ReportInfo struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Filter      string `json:"filter"`
+	Columns     string `json:"columns"`
+	Labels      string `json:"labels"`
+	Sort        string `json:"sort"`
+	Context     string `json:"context"`
+}

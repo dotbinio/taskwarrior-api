@@ -79,6 +79,7 @@ func SetupRouter(cfg *config.Config, twClient *taskwarrior.Client, validator *au
 	// Report routes
 	reports := v1.Group("/reports")
 	{
+		reports.GET("", reportHandler.ListReports)
 		reports.GET("/:name", reportHandler.GetReport)
 	}
 
