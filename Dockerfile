@@ -23,15 +23,16 @@ COPY pkg/ ./pkg/
 RUN /go/bin/swag init -g cmd/server/main.go -o docs
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o taskwarrior-api ./cmd/server
 
-# Runtime stage
-FROM alpine:latest
+# Using archlinux image to install Taskwarrior 3.x
+FROM archlinux/archlinux:latest
 
-# Install runtime dependencies and Taskwarrior
-RUN apk add --no-cache \
+# Install Taskwarrior 3.x and dependencies
+RUN pacman -Syu --noconfirm && \
+    pacman -S --noconfirm \
+    task \
     ca-certificates \
-    tzdata \
     wget \
-    task
+    && pacman -Scc --noconfirm
 
 # Set working directory
 WORKDIR /app
@@ -43,9 +44,6 @@ COPY --from=builder /build/taskwarrior-api .
 RUN mkdir -p /root/.task && \
     echo "data.location=/root/.task" > /root/.taskrc && \
     echo "confirmation=no" >> /root/.taskrc
-
-# Verify Taskwarrior installation
-RUN task --version
 
 # Expose port
 EXPOSE 8080
