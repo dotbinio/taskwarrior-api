@@ -1,0 +1,37 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+bin/
+*.exe
+
+# Documentation
+*.md
+docs/
+
+# Development
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test coverage
+*.out
+coverage.out
+
+# Go workspace
+go.work
+
+# Environment files
+.env
+.env.local
+.env.docker
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+

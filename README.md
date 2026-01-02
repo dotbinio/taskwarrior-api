@@ -76,6 +76,62 @@ make run
 ./bin/taskwarrior-api
 ```
 
+## Docker Deployment
+
+### Build and Push
+
+```bash
+# Build
+docker build -t taskwarrior-api:latest .
+
+# Tag for your registry
+docker tag taskwarrior-api:latest your-registry/taskwarrior-api:latest
+
+# Push
+docker push your-registry/taskwarrior-api:latest
+```
+
+Or use the Makefile:
+
+```bash
+make docker-build
+make docker-push  # Shows push instructions
+```
+
+## Kubernetes Deployment
+
+Complete Kubernetes manifests are provided in `k8s/deployment.yaml`.
+
+### Quick Deploy
+
+```bash
+# 1. Create secret with your tokens
+kubectl create secret generic taskwarrior-api-secret \
+  --from-literal=tokens="your-token-1,token-2" \
+  -n taskwarrior
+
+# 2. Update image in k8s/deployment.yaml
+# 3. Deploy
+kubectl apply -f k8s/deployment.yaml
+
+# 4. Port forward to test
+kubectl port-forward -n taskwarrior svc/taskwarrior-api 8080:8080
+```
+
+Or use the Makefile:
+
+```bash
+make k8s-deploy
+make k8s-port-forward
+```
+
+See [KUBERNETES.md](KUBERNETES.md) for complete deployment guide including:
+- Image registry setup
+- Ingress configuration
+- Monitoring and scaling
+- Data persistence options
+- Troubleshooting
+
 ## Configuration
 
 The server is configured entirely through environment variables.
@@ -526,6 +582,27 @@ make fmt
 - **Automation**: Integrate with tools like Zapier, IFTTT, or custom scripts
 - **Team Dashboards**: Display team tasks on shared screens
 - **Voice Assistants**: Add tasks via Alexa, Google Home, etc.
+
+## Production Deployment
+
+This project includes production-ready deployment configurations:
+
+- **Docker**: Multi-stage build with security best practices
+- **Docker Compose**: Ready-to-use orchestration
+- **CI/CD**: GitHub Actions workflows for testing and releases
+- **Systemd**: Service configuration for Linux servers
+- **Reverse Proxy**: Examples for Nginx and Caddy
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment guides, security considerations, monitoring, and troubleshooting.
+
+### Quick Deploy with Docker
+
+```bash
+export TW_API_TOKENS="$(openssl rand -hex 32)"
+docker-compose up -d
+```
+
+Access at: `http://localhost:8080/swagger/index.html`
 
 ## Contributing
 
