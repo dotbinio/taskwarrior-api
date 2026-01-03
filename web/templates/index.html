@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taskwarrior API - Example UI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        :root {
+            --spacing: 1rem;
+        }
+        .token-form {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid var(--muted-border-color);
+            border-radius: var(--border-radius);
+        }
+        .report-selector {
+            margin-bottom: 1rem;
+        }
+        .task-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+        .task-table table {
+            font-size: 0.9rem;
+        }
+        .error-message {
+            color: var(--del-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid var(--del-color);
+            border-radius: var(--border-radius);
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        .report-info {
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: var(--card-background-color);
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+        }
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+        }
+        .status-pending {
+            background: var(--primary);
+            color: white;
+        }
+        .status-completed {
+            background: var(--ins-color);
+            color: white;
+        }
+        header {
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <header>
+            <h1>Taskwarrior API</h1>
+            <p>Read-only example UI for viewing tasks and reports</p>
+        </header>
+
+        <div class="token-form">
+            <label for="api-token">
+                API Token
+                <input type="password" id="api-token" placeholder="Enter your API token" />
+            </label>
+            <small>Token is stored in your browser session only</small>
+        </div>
+
+        <div id="app">
+            <div class="loading">
+                <p>Enter your API token above to view tasks</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Token management
+        const tokenInput = document.getElementById('api-token');
+        const savedToken = sessionStorage.getItem('tw-api-token');
+        
+        if (savedToken) {
+            tokenInput.value = savedToken;
+            loadUI();
+        }
+
+        tokenInput.addEventListener('input', (e) => {
+            const token = e.target.value.trim();
+            if (token) {
+                sessionStorage.setItem('tw-api-token', token);
+                loadUI();
+            }
+        });
+
+        // API helper
+        async function apiCall(endpoint) {
+            const token = sessionStorage.getItem('tw-api-token');
+            if (!token) {
+                return { error: 'No API token provided' };
+            }
+
+            try {
+                const response = await fetch(endpoint, {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                if (!response.ok) {
+                    return { error: 'API call failed: ' + response.statusText };
+                }
+
+                return await response.json();
+            } catch (err) {
+                return { error: 'Network error: ' + err.message };
+            }
+        }
+
+        // Load the main UI
+        async function loadUI() {
+            const token = sessionStorage.getItem('tw-api-token');
+            if (!token) return;
+
+            const appDiv = document.getElementById('app');
+            appDiv.innerHTML = '<div class="loading"><p>Loading reports...</p></div>';
+
+            // Fetch reports list
+            const reportsData = await apiCall('/api/v1/reports');
+            
+            if (reportsData.error) {
+                appDiv.innerHTML = '<div class="error-message">' + reportsData.error + '</div>';
+                return;
+            }
+
+            const reports = reportsData.reports || [];
+            
+            // Build UI
+            let html = '<div class="report-selector">';
+            html += '<label for="report-select">Select Report</label>';
+            html += '<select id="report-select" onchange="loadReport(this.value)">';
+            
+            reports.forEach(report => {
+                const selected = report.name === 'next' ? 'selected' : '';
+                html += '<option value="' + report.name + '" ' + selected + '>' + 
+                        report.name + (report.description ? ' - ' + report.description : '') + 
+                        '</option>';
+            });
+            
+            html += '</select>';
+            html += '</div>';
+            html += '<div id="report-info"></div>';
+            html += '<div id="tasks-container" class="task-table"></div>';
+            
+            appDiv.innerHTML = html;
+
+            // Store reports for later use
+            window.taskReports = reports;
+
+            // Load default report (next)
+            loadReport('next');
+        }
+
+        // Load tasks for a specific report
+        async function loadReport(reportName) {
+            const container = document.getElementById('tasks-container');
+            const infoDiv = document.getElementById('report-info');
+            
+            container.innerHTML = '<div class="loading"><p>Loading tasks...</p></div>';
+            infoDiv.innerHTML = '';
+
+            // Find report config
+            const report = window.taskReports.find(r => r.name === reportName);
+            
+            if (report) {
+                let infoHtml = '<div class="report-info">';
+                if (report.description) {
+                    infoHtml += '<strong>' + report.description + '</strong><br>';
+                }
+                if (report.filter) {
+                    infoHtml += '<small>Filter: ' + report.filter + '</small>';
+                }
+                infoHtml += '</div>';
+                infoDiv.innerHTML = infoHtml;
+            }
+
+            // Fetch tasks
+            const tasksData = await apiCall('/api/v1/reports/' + reportName + '/tasks');
+            
+            if (tasksData.error) {
+                container.innerHTML = '<div class="error-message">' + tasksData.error + '</div>';
+                return;
+            }
+
+            const tasks = tasksData.tasks || [];
+            
+            if (tasks.length === 0) {
+                container.innerHTML = '<p>No tasks found for this report.</p>';
+                return;
+            }
+
+            // Parse columns and labels from report config
+            let columns = ['id', 'description', 'project', 'tags', 'due', 'urgency'];
+            let labels = ['ID', 'Description', 'Project', 'Tags', 'Due', 'Urg'];
+
+            if (report && report.columns) {
+                columns = report.columns.split(',').map(c => c.trim());
+            }
+            if (report && report.labels) {
+                labels = report.labels.split(',').map(l => l.trim());
+            }
+
+            // Build table
+            let html = '<table>';
+            html += '<thead><tr>';
+            
+            labels.forEach(label => {
+                html += '<th>' + label + '</th>';
+            });
+            
+            html += '</tr></thead><tbody>';
+
+            tasks.forEach(task => {
+                html += '<tr>';
+                
+                columns.forEach(col => {
+                    let value = task[col];
+                    
+                    // Format specific fields
+                    if (col === 'tags' && Array.isArray(value)) {
+                        value = value.map(t => '+' + t).join(' ');
+                    } else if (col === 'status') {
+                        value = '<span class="status-badge status-' + value + '">' + value + '</span>';
+                    } else if (value === null || value === undefined) {
+                        value = '';
+                    } else if (typeof value === 'number') {
+                        value = value.toFixed(2);
+                    }
+                    
+                    html += '<td>' + value + '</td>';
+                });
+                
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Make loadReport available globally
+        window.loadReport = loadReport;
+    </script>
+</body>
+</html>
+

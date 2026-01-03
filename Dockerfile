@@ -18,6 +18,7 @@ RUN go install github.com/swaggo/swag/cmd/swag@latest
 COPY cmd/ ./cmd/
 COPY internal/ ./internal/
 COPY pkg/ ./pkg/
+COPY web/ ./web/
 
 # Generate Swagger docs and build
 RUN /go/bin/swag init -g cmd/server/main.go -o docs
@@ -39,6 +40,9 @@ WORKDIR /app
 
 # Copy API binary from Go builder
 COPY --from=builder /build/taskwarrior-api .
+
+# Copy web templates
+COPY --from=builder /build/web ./web
 
 # Create directory for Taskwarrior data and initialize config
 RUN mkdir -p /root/.task && \

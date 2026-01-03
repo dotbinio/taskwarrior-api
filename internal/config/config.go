@@ -18,8 +18,9 @@ type Config struct {
 
 // ServerConfig holds server-specific configuration
 type ServerConfig struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	EnableUI bool   `yaml:"enable_ui"`
 }
 
 // TaskwarriorConfig holds Taskwarrior-specific configuration
@@ -48,8 +49,9 @@ func Load() (*Config, error) {
 	config := &Config{
 		// Set defaults
 		Server: ServerConfig{
-			Host: "0.0.0.0",
-			Port: 8080,
+			Host:     "0.0.0.0",
+			Port:     8080,
+			EnableUI: true,
 		},
 		Taskwarrior: TaskwarriorConfig{
 			DataLocation: "~/.task",
@@ -87,6 +89,9 @@ func loadFromEnv(config *Config) {
 		if port, err := strconv.Atoi(portStr); err == nil {
 			config.Server.Port = port
 		}
+	}
+	if enableUIStr := os.Getenv("TW_API_ENABLE_UI"); enableUIStr != "" {
+		config.Server.EnableUI = enableUIStr == "true" || enableUIStr == "1"
 	}
 
 	// Taskwarrior configuration

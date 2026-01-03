@@ -50,6 +50,39 @@ The server will start on `http://localhost:8080`
 
 **Access Swagger UI**: Open `http://localhost:8080/swagger/index.html` in your browser
 
+## Embedded Example UI
+
+A read-only web UI is available for viewing tasks and reports. This is intended as an example/development tool and is **enabled by default**.
+
+### Accessing the UI
+
+Simply start the server and open `http://localhost:8080/` in your browser.
+
+### Disabling the UI
+
+If you want to disable the UI (e.g., for production):
+
+```bash
+export TW_API_ENABLE_UI=false
+./bin/taskwarrior-api
+```
+
+### Features
+
+- Read-only interface for viewing tasks
+- Dynamic report viewer using Taskwarrior's report configurations
+- Displays tasks using each report's configured columns and labels
+- Clean, minimal styling with Pico CSS
+- No build step required (all dependencies via CDN)
+
+### Security Notes
+
+- **Enabled by default** - Can be disabled via `TW_API_ENABLE_UI=false`
+- Requires valid API token (stored in browser session only)
+- Read-only - cannot create, modify, or delete tasks
+- Recommended for development and internal use
+- Consider using a reverse proxy with additional authentication for external access
+
 ### Building from Source
 
 ```bash
@@ -148,6 +181,7 @@ The server is configured entirely through environment variables.
 |----------|-------------|---------|
 | `TW_API_HOST` | Server host address | `0.0.0.0` |
 | `TW_API_PORT` | Server port | `8080` |
+| `TW_API_ENABLE_UI` | Enable embedded example UI | `true` |
 | `TW_DATA_LOCATION` | Path to Taskwarrior data directory | `~/.task` |
 | `TW_API_LOG_LEVEL` | Log level (debug, info, warn, error) | `info` |
 | `TW_API_CORS_ENABLED` | Enable CORS | `true` |

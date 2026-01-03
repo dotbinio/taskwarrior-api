@@ -25,6 +25,11 @@ func SetupRouter(cfg *config.Config, twClient *taskwarrior.Client, validator *au
 
 	router := gin.New()
 
+	// Load HTML templates if UI is enabled
+	if cfg.Server.EnableUI {
+		router.LoadHTMLGlob("web/templates/*")
+	}
+
 	// Recovery middleware
 	router.Use(gin.Recovery())
 
@@ -42,6 +47,10 @@ func SetupRouter(cfg *config.Config, twClient *taskwarrior.Client, validator *au
 		}
 		router.Use(cors.New(corsConfig))
 	}
+
+	// Embedded UI (no auth required, disabled by default)
+	uiHandler := handlers.NewUIHandler(cfg.Server.EnableUI)
+	router.GET("/", uiHandler.ServeUI)
 
 	// Health check endpoint (no auth required)
 	router.GET("/health", func(c *gin.Context) {
