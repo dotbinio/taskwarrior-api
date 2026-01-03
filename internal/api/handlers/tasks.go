@@ -38,26 +38,19 @@ func (h *TaskHandler) ListTasks(c *gin.Context) {
 	project := c.Query("project")
 	tags := c.QueryArray("tags")
 
-	// Build filter string for Taskwarrior
-	filterParts := []string{}
+	// Build filter array for Taskwarrior
+	filters := []string{}
 	if status != "" {
-		filterParts = append(filterParts, "status:"+status)
+		filters = append(filters, "status:"+status)
 	}
 	if project != "" {
-		filterParts = append(filterParts, "project:"+project)
+		filters = append(filters, "project:"+project)
 	}
 	for _, tag := range tags {
-		filterParts = append(filterParts, "+"+tag)
+		filters = append(filters, "+"+tag)
 	}
 
-	filter := ""
-	if len(filterParts) > 0 {
-		for _, part := range filterParts {
-			filter += part + " "
-		}
-	}
-
-	tasks, err := h.client.Export(filter)
+	tasks, err := h.client.Export(filters...)
 	if err != nil {
 		log.Printf("Failed to retrieve tasks: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{

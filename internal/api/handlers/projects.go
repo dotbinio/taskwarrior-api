@@ -69,7 +69,7 @@ func (h *ProjectHandler) GetProjectTasks(c *gin.Context) {
 	// Sanitize project name
 	projectName = taskwarrior.SanitizeInput(projectName)
 
-	tasks, err := h.client.Export("project:" + projectName + " status:pending")
+	tasks, err := h.client.Export("project:"+projectName, "status:pending")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "failed to retrieve project tasks",

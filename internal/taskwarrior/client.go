@@ -22,19 +22,20 @@ func NewClient(dataLocation string) *Client {
 	}
 }
 
-func (c *Client) Export(filter string) ([]Task, error) {
-	return c.ExportReport(filter, "")
+func (c *Client) Export(filters ...string) ([]Task, error) {
+	return c.ExportReport(filters, "")
 }
 
 // ExportReport retrieves all tasks with the provided report and matching the filter as JSON
-func (c *Client) ExportReport(filter string, report string) ([]Task, error) {
+func (c *Client) ExportReport(filters []string, report string) ([]Task, error) {
 	args := []string{}
-	if filter != "" {
-		args = append(args, filter)
-	}
+
+	// Add filter arguments
+	args = append(args, filters...)
+
 	args = append(args, "export")
 
-	// TODO: vaidation for report
+	// TODO: validation for report
 	if report != "" {
 		args = append(args, report)
 	}

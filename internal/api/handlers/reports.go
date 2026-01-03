@@ -58,7 +58,7 @@ func (h *ReportHandler) ListReports(c *gin.Context) {
 func (h *ReportHandler) GetReport(c *gin.Context) {
 	reportName := c.Param("name")
 
-	tasks, err := h.client.ExportReport("", reportName)
+	tasks, err := h.client.ExportReport([]string{}, reportName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "failed to retrieve tasks",
