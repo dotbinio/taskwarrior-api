@@ -25,7 +25,8 @@ type ServerConfig struct {
 
 // TaskwarriorConfig holds Taskwarrior-specific configuration
 type TaskwarriorConfig struct {
-	DataLocation string `yaml:"data_location"`
+	DataLocation   string `yaml:"data_location"`
+	TaskrcLocation string `yaml:"taskrc_location"`
 }
 
 // AuthConfig holds authentication configuration
@@ -54,7 +55,8 @@ func Load() (*Config, error) {
 			EnableUI: true,
 		},
 		Taskwarrior: TaskwarriorConfig{
-			DataLocation: "~/.task",
+			DataLocation:   "~/.task",
+			TaskrcLocation: "~/.taskrc",
 		},
 		Auth: AuthConfig{
 			Tokens: []string{},
@@ -97,6 +99,9 @@ func loadFromEnv(config *Config) {
 	// Taskwarrior configuration
 	if dataLocation := os.Getenv("TW_DATA_LOCATION"); dataLocation != "" {
 		config.Taskwarrior.DataLocation = dataLocation
+	}
+	if taskrcLocation := os.Getenv("TW_TASKRC_LOCATION"); taskrcLocation != "" {
+		config.Taskwarrior.TaskrcLocation = taskrcLocation
 	}
 
 	// Auth configuration

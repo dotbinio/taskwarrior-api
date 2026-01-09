@@ -12,13 +12,15 @@ import (
 
 // Client wraps the Taskwarrior CLI
 type Client struct {
-	dataLocation string
+	dataLocation   string
+	taskrcLocation string
 }
 
 // NewClient creates a new Taskwarrior client
-func NewClient(dataLocation string) *Client {
+func NewClient(dataLocation, taskrcLocation string) *Client {
 	return &Client{
-		dataLocation: dataLocation,
+		dataLocation:   dataLocation,
+		taskrcLocation: taskrcLocation,
 	}
 }
 
@@ -366,8 +368,20 @@ func (c *Client) buildCommand(args ...string) *exec.Cmd {
 		}
 	}
 
-	// Prepend data location override
-	allArgs := append([]string{fmt.Sprintf("rc.data.location=%s", dataLocation)}, args...)
+	taskrcLocation := c.taskrcLocation
+	if strings.HasPrefix(taskrcLocation, "~/") {
+		home, err := os.UserHomeDir()
+		if err == nil {
+			taskrcLocation = strings.Replace(taskrcLocation, "~", home, 1)
+		}
+	}
+
+	// Prepend data location and taskrc location overrides
+	allArgs := []string{fmt.Sprintf("rc.data.location=%s", dataLocation)}
+	if taskrcLocation != "" {
+		allArgs = append(allArgs, fmt.Sprintf("rc:%s", taskrcLocation))
+	}
+	allArgs = append(allArgs, args...)
 	log.Printf("Running command: task %s", strings.Join(allArgs, " "))
 	cmd := exec.Command("task", allArgs...)
 	return cmd

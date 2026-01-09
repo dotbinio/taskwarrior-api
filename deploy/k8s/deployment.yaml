@@ -30,6 +30,8 @@ spec:
           value: "8080"
         - name: TW_DATA_LOCATION
           value: "/root/.task"
+        - name: TW_TASKRC_LOCATION
+          value: "/root/.taskrc"
         - name: TW_API_LOG_LEVEL
           value: "info"
         - name: TW_API_CORS_ENABLED

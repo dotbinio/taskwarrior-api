@@ -40,10 +40,11 @@ func main() {
 
 	log.Printf("Starting Taskwarrior API server...")
 	log.Printf("Data location: %s", cfg.Taskwarrior.DataLocation)
+	log.Printf("Taskrc location: %s", cfg.Taskwarrior.TaskrcLocation)
 	log.Printf("Server address: %s", cfg.GetAddress())
 
 	// Initialize Taskwarrior client
-	twClient := taskwarrior.NewClient(cfg.Taskwarrior.DataLocation)
+	twClient := taskwarrior.NewClient(cfg.Taskwarrior.DataLocation, cfg.Taskwarrior.TaskrcLocation)
 
 	// Initialize token validator
 	validator := auth.NewTokenValidator(cfg.Auth.Tokens)

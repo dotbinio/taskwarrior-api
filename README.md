@@ -183,6 +183,7 @@ The server is configured entirely through environment variables.
 | `TW_API_PORT` | Server port | `8080` |
 | `TW_API_ENABLE_UI` | Enable embedded example UI | `true` |
 | `TW_DATA_LOCATION` | Path to Taskwarrior data directory | `~/.task` |
+| `TW_TASKRC_LOCATION` | Path to Taskwarrior taskrc file | `~/.taskrc` |
 | `TW_API_LOG_LEVEL` | Log level (debug, info, warn, error) | `info` |
 | `TW_API_CORS_ENABLED` | Enable CORS | `true` |
 | `TW_API_CORS_ORIGINS` | Comma-separated list of allowed origins | `http://localhost:3000` |
@@ -193,6 +194,7 @@ The server is configured entirely through environment variables.
 export TW_API_TOKENS="my-secret-token-123,another-token-456"
 export TW_API_PORT=8080
 export TW_DATA_LOCATION="~/.task"
+export TW_TASKRC_LOCATION="~/.taskrc"
 export TW_API_LOG_LEVEL="info"
 export TW_API_CORS_ORIGINS="http://localhost:3000,https://mytasks.example.com"
 
